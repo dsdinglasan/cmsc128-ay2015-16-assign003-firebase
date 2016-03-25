@@ -1,0 +1,61 @@
+<!doctype html>
+<html>
+  <head>
+    <script src='https://cdn.firebase.com/js/client/2.2.1/firebase.js'></script>
+    <script src='https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js'></script>
+    <link rel='stylesheet' type='text/css' href='css/materialize.min.css'>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+  </head>
+  <body style="background-image: url(images/bg.jpg)">	
+  <nav>
+    <div class="nav-wrapper">
+      <a href="#" class="brand-logo" style="margin-left:5%;"> Note Pad Alpha</a>
+    </div>
+  </nav>
+  	
+    <div style="width: 50%;margin-left:25%;margin-top:2%;" class="card-panel indigo lighten-1 white-text">
+    <h5 class="header">Add a new task</h5>
+    <input type='text' id='taskInput' placeholder="Task Name">
+    <input type='text' id='completedInput' placeholder="Completed(yes or no)">
+    </div>
+    
+    <table class="bordered responsive-table amber lighten-2 white-text" id='tasksDiv' style="width:70%;margin-left:15%;margin-top:2%;margin-bottom:2%;" overflow="auto">
+    	<thead>
+          <tr>
+              <th>Task Name</th>
+              <th>Completed</th>
+          </tr>
+        </thead>
+        <tbody>
+        
+        </tbody>
+    </table>
+    <script>
+      var myDataRef = new Firebase('https://note-pad-alpha.firebaseio.com/taskList/');
+      $('#completedInput').keypress(function (e) {
+        if (e.keyCode == 13) {
+          var name = $('#taskInput').val();
+          var completed = $('#completedInput').val();
+          myDataRef.push({name: name, completed: completed});
+          $('#completedInput').val('');
+          $('#taskInput').val('');
+        }
+      });
+      myDataRef.on('child_added', function(snapshot) {
+        var task = snapshot.val();
+        displayTasks(task.name, task.completed);
+      });
+      function displayTasks(name, completed) {
+      		var newRow = $("<tr/>");
+			newRow.append($("<td/>").append($("<em/>").text(name)));
+			if(completed.toLowerCase()=="yes"){
+				newRow.append($("<td/>").append("<i class='material-icons'>done</i>"));
+			}
+			else{
+				newRow.append($("<td/>").append("<i class='material-icons'>query_builder</i>"));
+			}
+			$("#tasksDiv").append(newRow);
+      };
+    </script>
+  </body>
+</html>
